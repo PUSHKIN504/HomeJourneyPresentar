@@ -1,0 +1,89 @@
+<p-toast></p-toast>
+<!-- <div class="loader-container" *ngIf="loading">
+  <div class="loader">
+    <span></span>
+  </div>
+</div> -->
+
+<!-- Contenedor Principal -->
+<div class="grid" *ngIf="Index">
+  <div class="col-12">
+    <div class="card">
+      <!-- Título -->
+      <h1 class="text-center mt-2">Nuevo Viaje</h1>
+      <hr>
+
+      <!-- Formulario -->
+      <div class="grid">
+        <form [formGroup]="form" class="grid col-12 p-fluid p-formgrid">
+          <!-- Selección de Sucursal -->
+          <div class="field col-12 md:col-6">
+            <label for="sucursal" style="display: inline-block;">Sucursal&nbsp;</label>
+            <p-autoComplete 
+                formControlName="sucursal" 
+                [suggestions]="sucursalSuggestions" 
+                (completeMethod)="buscarSucursales($event)" 
+                (onSelect)="onSucursalSelect($event)"
+                field="sucu_nombre" 
+                [forceSelection]="true" 
+                [dropdown]="true"
+                [ngClass]="{'ng-invalid ng-dirty': (submitted && form.controls['sucursal'].invalid) }"
+                [minLength]="1"
+                placeholder="Seleccione una sucursal">
+            </p-autoComplete>
+            <small *ngIf="submitted && form.controls['sucursal'].invalid" style="color: red;">El campo es requerido.</small>
+          </div>
+
+          <!-- Selección de Transportista -->
+          <div class="field col-12 md:col-6">
+            <label for="transportista" style="display: inline-block;">Transportistas&nbsp;</label>
+            <p-autoComplete 
+                formControlName="transportista" 
+                [suggestions]="transportistasSuggestions" 
+                (completeMethod)="buscarTransportistas($event)" 
+                (onSelect)="onTransportistaSelect($event)"
+                field="nombre_transp" 
+                [forceSelection]="true" 
+                [dropdown]="true"
+                [ngClass]="{'ng-invalid ng-dirty': (submitted && form.controls['transportista'].invalid) }"
+                [minLength]="1"
+                placeholder="Seleccione un transportista">
+            </p-autoComplete>
+            <small *ngIf="submitted && form.controls['transportista'].invalid" style="color: red;">El campo es requerido.</small>
+          </div>
+
+          <!-- Tarifa por Kilómetro -->
+          <div class="field col-12">
+            <p class="text-right"><strong>Tarifa por km:</strong> {{ tarifaPorKm ? tarifaPorKm + ' Lps' : 'Seleccione un transportista' }}</p>
+          </div>
+
+          <div class="field col-12">
+            <label for="colaboradores" style="display: inline-block;">Colaboradores&nbsp;</label>
+            <div class="grid col-12 p-fluid ">
+              <p-checkbox
+                *ngFor="let colaborador of colaboradorscuursal"
+                [label]="colaborador.cola_nombre_completo + ' - Dist: ' + colaborador.distancia_km + 'KM'"
+                [binary]="true"
+                [value]="colaborador.cola_id"
+                [ngClass]="{ 'field': true, 'col-12': true, 'md:col-4': true }"
+                (onChange)="onColaboradorChange($event, colaborador)"
+                [disabled]="!transportistaSeleccionado"
+              ></p-checkbox>
+            </div>
+          </div>
+          
+
+          
+        </form>
+      </div>
+
+      <div style="display: flex;justify-content: end;">
+        <p class="text-right" style="margin-left: 2%;"><strong>Pago Total:</strong> {{ totalPago ? totalPago + 'LPS' : 'Seleccione colaboradores' }}</p>
+        <p class="text-right" style="margin-left: 2%;"><strong>Kilometros Totales:</strong> {{ kilometrosTotales ? kilometrosTotales + ' KM' : 'Seleccione colaboradores' }}</p>
+        <button (click)="guardar()" style="margin-left: 2%;" class="btn btn-guardar" pButton pRipple type="button" label="Guardar" icon="pi pi-save"></button>
+        <button (click)="cancelar()" style="margin-left: 2%;" class="p-button-secondary" pButton pRipple type="button" label="Cancelar" icon="pi pi-times"></button>
+    </div>
+    
+    </div>
+  </div>
+</div>

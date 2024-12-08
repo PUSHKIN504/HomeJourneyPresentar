@@ -1,0 +1,138 @@
+<p-toast></p-toast>
+<div class="loader-container" *ngIf="loading">
+    <div class="loader">
+        <span></span>
+    </div>
+</div>
+
+<!-- Grid principal para mostrar el reporte -->
+<div class="grid" *ngIf="Index">
+    <div class="col-12">
+        <div class="card">
+            <!-- Título del reporte -->
+            <h1 class="text-center mt-2">Reporte de Viajes</h1>
+            <hr>
+
+            <!-- Formulario para filtrar por transportista y rango de fechas -->
+            <div class="grid">
+                <form [formGroup]="form" class="grid col-12 p-fluid p-formgrid">
+                    <div class="field col-12 md:col-4">
+                        <label for="transportistaId" style="display: inline-block;">ID del Transportista&nbsp;</label>
+                        <input 
+                            type="number" 
+                            formControlName="transportistaId" 
+                            placeholder="Ingrese el ID del transportista" 
+                            class="p-inputtext p-component p-element" 
+                            [ngClass]="{'ng-invalid ng-dirty': submitted && form.controls['transportistaId'].invalid}"
+                            >
+                        <small *ngIf="submitted && form.controls['transportistaId'].invalid" style="color: red;">
+                            El campo es requerido.
+                        </small>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="fechaInicio" style="display: inline-block;">Fecha Inicio&nbsp;</label>
+                        <p-calendar [showIcon]="true" inputId="icon" dateFormat="mm/dd/yy" formControlName="fechaInicio" [ngClass]="{'ng-invalid ng-dirty': submitted && form.controls['fechaInicio'].invalid}"  [minDate]="minDate"></p-calendar>
+
+                        
+                        <small *ngIf="submitted && form.controls['fechaInicio'].invalid" style="color: red;">
+                            El campo es requerido.
+                        </small>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="fechaFin" style="display: inline-block;">Fecha Fin&nbsp;</label>
+                        <p-calendar [showIcon]="true" inputId="icon" dateFormat="mm/dd/yy" formControlName="fechaFin" [ngClass]="{'ng-invalid ng-dirty': submitted && form.controls['fechaFin'].invalid}"  [minDate]="minDate"></p-calendar>
+
+                        
+                        <small *ngIf="submitted && form.controls['fechaFin'].invalid" style="color: red;">
+                            El campo es requerido.
+                        </small>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Botón para generar el reporte -->
+            <div class="grid mt-2">
+                <div class="col-12 text-center">
+                    <button (click)="generarReporte()" pButton icon="pi pi-search" label="Generar Reporte" class="mr-2"></button>
+                </div>
+            </div>
+            <div id="reporteImprimible">
+            <!-- Mostrar encabezado del reporte -->
+            <div *ngIf="encabezado && pasajeros.length > 0" class="grid mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <h2 class="text-center">Información del Transportista</h2>
+                        <hr>
+                        <div class="grid">
+                            <div class="col-12 md:col-4">
+                                <p><strong>Transportista:</strong> {{ encabezado.transportista }}</p>
+                            </div>
+                            <div class="col-12 md:col-4">
+                                <p><strong>Sucursal:</strong> {{ encabezado.sucursal }}</p>
+                            </div>
+                            
+                            <div class="col-12 md:col-4">
+                                <p><strong>Tarifa por Km:</strong> {{ encabezado.tarifaPorKm | currency }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de pasajeros -->
+            <div class="grid mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <h2 class="text-center">Pasajeros del Viaje</h2>
+                        <p-table #dt [value]="pasajeros" styleClass="mt-2" responsiveLayout="scroll" [rows]="10"
+                                 [paginator]="true" [showCurrentPageReport]="true"
+                                 currentPageReportTemplate="Mostrando {first} al {last} de {totalRecords} entradas"
+                                 [rowsPerPageOptions]="[10, 25, 50, 100]">
+
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    
+                                    <th style="color: white;" class="text-center">Nombre</th>
+                                    <th style="color: white;" class="text-center">Sexo</th>
+                                    <th style="color: white;" class="text-center">Dirección</th>
+                                    <th style="color: white;" class="text-center">Total Pago Individual</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-pasajero>
+                                <tr>
+                                    <td class="text-center">{{ pasajero.nombre }}</td>
+                                    <td class="text-center">{{ pasajero.sexo }}</td>
+                                    <td class="text-center">{{ pasajero.direc }}</td>
+                                    <td class="text-center">{{ pasajero.totalPagoIndividual | currency }}</td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="3" class="text-center">No se encontraron pasajeros para este viaje.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total a pagar -->
+            <div class="grid mt-4">
+                <div class="col-12">
+                    <div class="card text-center">
+                        <h3><strong>Total a Pagar:</strong> {{ totalAPagar | currency }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="grid mt-2">
+                <div class="col-12 text-center">
+                  <button (click)="imprimirReporte()" pButton icon="pi pi-print" label="Imprimir Reporte" class="mr-2"></button>
+                </div>
+              </div>
+        </div>
+        
+    </div>
+</div>

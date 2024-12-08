@@ -1,0 +1,61 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "SIGESPROCContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": "Entities",
+   "OutputContextPath": null,
+   "OutputPath": "Entities",
+   "ProjectRootNamespace": "SIGESPROC.Entities",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 2,
+   "Tables": [
+      {
+         "Name": "[dbo].[tbcolaboradores]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tbcolaboradores_por_sucursales]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tbsucursales]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tbtransportistas]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tbusers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tbviajes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[tbviajes_detalle]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "mssql-188436-db-0.HomeJourney",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false
+}

@@ -1,0 +1,208 @@
+<!-- Componente de notificaciones para mostrar mensajes -->
+<p-toast></p-toast>
+<div class="loader-container" *ngIf="loading">
+    <div class="loader">
+        <span></span>
+    </div>
+  </div><!-- Grid principal para mostrar colaboradores y sucursales -->
+  <div class="grid" *ngIf="Index">
+      <div class="col-12">
+          <div class="card">
+              <!-- Título de la página -->
+              <h1 class="text-center mt-2">Colaboradores por Sucursal</h1>
+              <hr>
+  
+              <!-- Botón para agregar una nueva relación colaborador-sucursal -->
+              <div class="grid mt-2">
+                  <div class="col-12">
+                      <button (click)="CrearRelacion()" pButton icon="pi pi-plus" label="Nuevo" class="mr-2"></button>
+                  </div>
+              </div>
+  
+              <!-- Tabla para mostrar colaboradores y sucursales -->
+              <p-table #dt [value]="colaboradorscuursal" styleClass="mt-2" responsiveLayout="scroll" [rows]="10"
+              [globalFilterFields]="['cola_nombre_completo', 'cola_email', 'sucu_nombre', 'distancia_km']"
+              [paginator]="true" [showCurrentPageReport]="true"
+              currentPageReportTemplate="Mostrando {first} al {last} de {totalRecords} entradas" [rowHover]="true"
+              [rowsPerPageOptions]="[10, 25, 50, 100]">
+  
+                  <ng-template pTemplate="caption">
+                      <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                          <span class="block mt-2 md:mt-0 p-input-icon-left">
+                              <i style="color: white;" class="pi pi-search"></i>
+                              <input style="color: white;" pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                                  placeholder="Buscar..." class="w-full sm:w-auto" />
+                          </span>
+                          <div class="registros">
+                              <p-dropdown [options]="dt.rowsPerPageOptions" [(ngModel)]="dt.rows" [style]="{ 'margin-right': '5px' }" [autoWidth]="false"></p-dropdown>
+                              <span style="color: #FFF0C6; font-weight: 700; margin-top: 7px;"> Registros por página</span>
+                          </div>
+                      </div>
+                  </ng-template>
+  
+                  <!-- Encabezados de la tabla -->
+                  <ng-template pTemplate="header">
+                      <tr>
+                          <th style="color: white;" class="text-center">Acciones</th>
+                          <th style="color: white;" class="text-center" pSortableColumn="cosu_id">Relación ID<p-sortIcon field="cosu_id"></p-sortIcon></th>
+                          <th style="color: white;" pSortableColumn="cola_nombre_completo" class="text-center">Colaborador <p-sortIcon field="cola_nombre_completo"></p-sortIcon></th>
+                          <th style="color: white;" pSortableColumn="cola_email" class="text-center">Email <p-sortIcon field="cola_email"></p-sortIcon></th>
+                          <th style="color: white;" pSortableColumn="sucu_nombre" class="text-center">Sucursal <p-sortIcon field="sucu_nombre"></p-sortIcon></th>
+                          <th style="color: white;" pSortableColumn="distancia_km" class="text-center">Distancia (km) <p-sortIcon field="distancia_km"></p-sortIcon></th>
+                      </tr>
+                  </ng-template>
+  
+                  <!-- Cuerpo de la tabla con filas de datos -->
+                  <ng-template pTemplate="body" let-colaboradorscuursal>
+                      <tr (click)="selectRelacion(colaboradorscuursal)">
+                          <td class="text-center" style="width: 10%;">
+                              <p-splitButton class="custom-splitbutton" label="Acciones" icon="pi pi-cog" [model]="items" styleClass="p-button-secondary" appendTo="body"></p-splitButton>
+                          </td>
+                          <td class="text-center">
+                              <span class="p-column-title">Relación ID</span>
+                              {{colaboradorscuursal.cosu_id}}
+                          </td>
+                          <td class="text-center">
+                              <span class="p-column-title">Colaborador</span>
+                              {{colaboradorscuursal.cola_nombre_completo}}
+                          </td>
+                          <td class="text-center">
+                              <span class="p-column-title">Email</span>
+                              {{colaboradorscuursal.cola_email}}
+                          </td>
+                          <td class="text-center">
+                              <span class="p-column-title">Sucursal</span>
+                              {{colaboradorscuursal.sucu_nombre}}
+                          </td>
+                          <td class="text-center">
+                              <span class="p-column-title">Distancia (km)</span>
+                              {{colaboradorscuursal.distancia_km}}
+                          </td>
+                      </tr>
+                  </ng-template>
+  
+                  <ng-template pTemplate="emptymessage">
+                      <tr>
+                          <td colspan="6" class="text-center">
+                              No se encontraron registros.
+                          </td>
+                      </tr>
+                  </ng-template>
+              </p-table>
+          </div>
+      </div>
+  </div><!-- Formulario para crear o editar una relación colaborador-sucursal -->
+  <div class="grid" *ngIf="Create">
+      <div class="col-12">
+          <div class="card">
+              <div class="flex" style="width: 100%; margin: 0 auto; display: flex; align-items: center; height: 42px;">
+                  <div style="width: 20%; display: flex; align-items: center; height: 12.5%;">
+                      <button (click)="regresar()" class="p-button-link" pButton pRipple type="button" label="Regresar" icon="pi pi-arrow-left" style="box-shadow: none !important"></button>
+                  </div>
+                  <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center;">
+                      <h1 class="text-center mt-4">{{titulo}} </h1>
+                  </div>
+                  <div style="width: 20%;"></div>
+              </div>
+  
+              <hr>
+              <br>
+              <div class="grid">
+                  <form [formGroup]="form" class="grid col-12 p-fluid p-formgrid">
+                      <!-- Campo de autocomplete para seleccionar colaborador -->
+                      <div class="field col-12 md:col-6">
+                        <label for="colaborador" style="display: inline-block;">Colaborador&nbsp;</label>
+                        <p-autoComplete
+                          [dropdown]="true"
+                          formControlName="empleado"
+                          [suggestions]="colab"
+                          placeholder="Seleccione un colaborador"
+                          (completeMethod)="filterEmpleado($event)"
+                          (onSelect)="onEmpSelect($event)"
+                          field="cola_nombre"
+                          [forceSelection]="true"
+                          [ngClass]="{'ng-invalid ng-dirty': (submitted && form.controls['empleado'].invalid) , 'no-results': noResultsFound}">
+                        </p-autoComplete>
+                        <small *ngIf="submitted && form.controls['empleado'].invalid " style="color: red;">El campo es requerido.</small>
+                      </div>
+                      
+  
+                      <!-- Campo de autocomplete para seleccionar sucursal -->
+                      <div class="field col-12 md:col-6">
+                        <label for="sucursal" style="display: inline-block;">Sucursal&nbsp;</label>
+                        <p-autoComplete 
+                            formControlName="sucursal" 
+                            [suggestions]="sucursalSuggestions" 
+                            (completeMethod)="buscarSucursales($event)" 
+                            (onSelect)="onSucursalSelect($event)"
+                            field="sucu_nombre" 
+                            [forceSelection]="true" 
+                            [dropdown]="true"
+                            [minLength]="1"
+                          [ngClass]="{'ng-invalid ng-dirty': (submitted && form.controls['sucursal'].invalid) }"
+
+                            placeholder="Seleccione una sucursal">
+                        </p-autoComplete>
+                        <small *ngIf="submitted && form.controls['sucursal'].invalid" style="color: red;">El campo es requerido.</small>
+                      </div>
+  
+                      <!-- Campo de entrada para la distancia en kilómetros -->
+                      <div class="field col-12 md:col-6">
+                        <label for="distancia_km" style="display: inline-block;">Distancia (km)&nbsp;</label>
+                        <input 
+                            formControlName="distancia_km" 
+                            [min]="1" 
+                            [max]="50"
+                          [ngClass]="{'ng-invalid ng-dirty': (submitted && form.controls['distancia_km'].invalid)}"
+                          type="number" 
+                            class="p-inputtext p-component p-element" 
+                            placeholder="Ingrese la distancia en kilómetros">
+                        <small *ngIf="submitted && form.controls['distancia_km'].hasError('required')" style="color: red;">
+                          El campo es requerido.
+                        </small>
+                        <small *ngIf="submitted && form.controls['distancia_km'].hasError('min')" style="color: red;">
+                          La distancia debe ser mayor o igual a 1.
+                        </small>
+                        <small *ngIf="submitted && form.controls['distancia_km'].hasError('max')" style="color: red;">
+                          La distancia debe ser menor o igual a 50.
+                        </small>
+                      </div>
+                      
+                  </form>
+              </div>
+              <br>
+              <div style="display: flex;justify-content: end;">
+                  <!-- Botones para guardar o cancelar -->
+                  <button (click)="handleClick()" class="btn btn-guardar" pButton pRipple type="button" label="Guardar" icon="pi pi-save"></button>
+                  <button (click)="CerrarCosu()" style="margin-left: 2%;" class="p-button-secondary" pButton pRipple type="button" label="Cancelar" icon="pi pi-times"></button>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+
+
+
+
+  <!-- Diálogo de confirmación para edición -->
+<p-dialog [(visible)]="Editt"  header="Confirmación" [modal]="true" [style]="{width:'450px'}">
+    <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-pencil mr-3" style="font-size: 2rem"></i>
+        <span>¿Está seguro de que desea editar el campo?</span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-pencil" type="button" label="Aceptar" (click)="confirmEdit(); ConfirmarRol = false"></button>
+        <button pButton pRipple icon="pi pi-times" class="p-button-outlined p-button-primary" label="Cancelar" (click)="Editt = false"></button>
+    </ng-template>
+</p-dialog>
+<!-- Diálogo de confirmación para eliminación -->
+<p-dialog [(visible)]="Delete" header="Confirmación" [modal]="true" [style]="{width:'450px'}">
+    <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span>¿Está seguro de eliminar el campo?</span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-trash" type="button" label="Eliminar" (click)="Eliminar()"></button>
+        <button pButton pRipple icon="pi pi-times" class="p-button-outlined p-button-primary" label="Cancelar" (click)="Delete = false"></button>
+    </ng-template>
+</p-dialog>
