@@ -11,6 +11,7 @@ import { Respuesta } from 'src/app/demo/services/ServiceResult';
 import { CookieService } from 'ngx-cookie-service';
 import { filter } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
+import { transportistaViewModel } from 'src/app/demo/models/modelsplanilla/Transportistasviewmodel';
 
 @Component({
   selector: 'app-presupuesto',
@@ -27,6 +28,8 @@ export class Requisito2Component implements OnInit {
   pasajeros: any[] = []; 
   totalAPagar: number = 0;
   Create: boolean = false;
+  transportistasvm: transportistaViewModel[] = []; 
+  transportistasSuggestions: any[] = [];
 
   constructor( private fb: FormBuilder,
     private reporteViajesService: GralService,
@@ -40,10 +43,35 @@ export class Requisito2Component implements OnInit {
     this.form = this.fb.group({
       transportistaId: ['', Validators.required],
       fechaInicio: ['', Validators.required],
-      fechaFin: ['', Validators.required]
+      fechaFin: ['', Validators.required],
+      transportista: ['', Validators.required]
     });
+
+    this.getTransportistas();
   }
 
+  getTransportistas(): void {
+    this.reporteViajesService.obtenerTransportistas().subscribe((data) => {
+      console.log(data);
+      this.transportistasvm = data.map((transp) => ({
+        ...transp,
+        nombre_transp: transp.nombre_transp 
+      }));
+      console.log('transportistas cargadas:', this.transportistasvm);
+    });
+  }
+  buscarTransportistas(event: any): void {
+    const query = event.query.toLowerCase();
+    this.transportistasSuggestions = this.transportistasvm.filter((sucursal) =>
+      sucursal.nombre_transp.toLowerCase().includes(query)
+    );
+    console.log('transportistas sugeridas:', this.transportistasSuggestions);
+  }
+  onTransportistaSelect(event: any) {
+    console.log('transportista seleccionada:', event);
+    this.form.get('transportistaId')?.setValue(event.value.trans_id);
+    this.form.get('transportista')?.setValue(event.value.nombre_transp);
+  }
   imprimirReporte(): void {
     // Verifica si hay datos cargados para generar el reporte
     if (!this.encabezado || this.pasajeros.length === 0) {
