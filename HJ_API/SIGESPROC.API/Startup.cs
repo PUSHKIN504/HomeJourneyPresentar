@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SIGESPROC.API.Hubs;
 using SIGESPROC.API.Middleware;
 
 namespace SIGESPROC.API
@@ -34,9 +33,6 @@ namespace SIGESPROC.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
-
-            services.AddTransient<IMailService, MailService>();
 
             services.AddCors(options =>
             {
@@ -118,7 +114,7 @@ namespace SIGESPROC.API
             //    RequestPath = "/uploads"
             //});
 
-            app.UseWhen(context => !context.Request.Path.StartsWithSegments("/fleteHub"), appBuilder =>
+            app.UseWhen(context => !context.Request.Path.StartsWithSegments(""), appBuilder =>
             {
                 appBuilder.UseMiddleware<ApiKeyMiddleware>();
             });
@@ -127,7 +123,6 @@ namespace SIGESPROC.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<FleteHub>("/fleteHub");
             });
         }
     }

@@ -38,12 +38,7 @@ namespace SIGESPROC.API.Middleware
 
             // Check if the path starts with the endpoint to skip API key validation
             var path = context.Request.Path.Value.ToLower();
-            if (path.StartsWith("/api/empleado/obtenerimagen"))
-            {
-                await _next(context);
-                return;
-            }
-
+         
             if (context.Request.Path == "/api/Usuarios/Login")
             {
                 context.Response.OnStarting(async () =>
@@ -64,10 +59,7 @@ namespace SIGESPROC.API.Middleware
 
                 await _next(context);
             }
-            else if (context.Request.Path == "/api/Usuarios/UsuarioCorreo" || context.Request.Path == "/api/Usuarios/CambiarContrasenia" || context.Request.Path == "/api/Duca/GenerarDuca" || context.Request.Path == "/api/RolesPorPantallas/DibujadoDeMenu")
-            {
-                await _next(context);
-            }
+          
             else
             {
 
