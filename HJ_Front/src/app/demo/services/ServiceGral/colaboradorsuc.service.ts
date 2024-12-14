@@ -6,7 +6,7 @@ import {SucursalViewModel } from '../../models/modelsplanilla/sucursalviewmodel'
 import { Observable } from 'rxjs';
 import { environment } from 'src/environment/environment';
 import { transportistaViewModel } from '../../models/modelsplanilla/Transportistasviewmodel';
-import { ViajeEncabezado } from '../../models/modelsplanilla/viajesviewmodel';
+import { ViajeEncabezado, ViajeConDetallesViewModel } from '../../models/modelsplanilla/viajesviewmodel';
 import { ViajeDetalle } from '../../models/modelsplanilla/viajesviewmodel';
 
 @Injectable({
@@ -37,6 +37,9 @@ export class GralService {
   }
   obtenerColaboradores (){
     return this.http.get<ColaboradorSucursal[]>(`${this.colaboradorsucursalEncabezado}/ListarColaboradores`,this.getHttpOptions());
+  }
+  obtenerViajes (){
+    return this.http.get<ViajeConDetallesViewModel[]>(`${this.colaboradorsucursalEncabezado}/ListarViajes`,this.getHttpOptions());
   }
   obtenerSucursales (){
     return this.http.get<SucursalViewModel[]>(`${this.colaboradorsucursalEncabezado}/ListarSuc`,this.getHttpOptions());

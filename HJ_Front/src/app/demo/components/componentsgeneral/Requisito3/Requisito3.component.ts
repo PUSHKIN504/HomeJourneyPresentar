@@ -11,10 +11,11 @@ import { Respuesta } from 'src/app/demo/services/ServiceResult';
 import { CookieService } from 'ngx-cookie-service';
 import { filter } from 'rxjs/operators';
 import { transportistaViewModel } from 'src/app/demo/models/modelsplanilla/Transportistasviewmodel';
-import { ViajeEncabezado } from 'src/app/demo/models/modelsplanilla/viajesviewmodel';
+import { ViajeEncabezado,ViajeConDetallesViewModel } from 'src/app/demo/models/modelsplanilla/viajesviewmodel';
 import { ViajeDetalle } from 'src/app/demo/models/modelsplanilla/viajesviewmodel';
 import { er } from '@fullcalendar/core/internal-common';
-
+import { from } from 'rxjs';
+import { concatMap, delay } from 'rxjs/operators';
 @Component({
   selector: 'app-presupuesto',
   templateUrl: './Requisito3.component.html',
@@ -23,6 +24,9 @@ import { er } from '@fullcalendar/core/internal-common';
 })
 export class Requisito3Component implements OnInit {
   ngOnInit(): void {
+    this.items = [
+    ];
+    this.obtenerViajes();
     this.form = this.fb.group({
       sucursal: ['', Validators.required],
       sucu_id: ['', Validators.required],
@@ -37,6 +41,9 @@ export class Requisito3Component implements OnInit {
         console.log('Nombre del usuario:', this.id);
   }
   submitted: boolean = false;
+  Create: boolean = false;
+  items: MenuItem[] = [];
+  expandedRowKeys: { [key: number]: boolean } = {};
   form: FormGroup;
   totalPago: number = 0;
   id = this.cookieService.get('iduser');
@@ -48,19 +55,75 @@ export class Requisito3Component implements OnInit {
   transportistasSuggestions: any[] = [];
   transportistas: any[] = [];
   colaboradores: any[] = [];
+  titulo: string = "Nuevo";
   colaboradorSeleccionado: { [key: number]: boolean } = {};
   tarifaPorKm: number | null = null;
   errorKm: boolean = false;
   Index: boolean = true;
   colaboradorscuursal: ColaboradorSucursal[] = [];
   transportistaSeleccionado: any = null; 
-         
+  viajes:ViajeConDetallesViewModel[] = [];
+  expandedRows: number[] = []; 
         constructor(private fb: FormBuilder,private service: GralService,private messageService: MessageService,private cookieService: CookieService,) {
    
   }
-
+ 
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  }
+
+  obtenerViajes(): void {
+    this.service.obtenerViajes().subscribe((data) => {
+      // this.viajes = data.map((viaje) => ({
+      //   ...viaje,
+        
+      //   sucu_nombre: viaje.sucu_nombre || 'Sin nombre'
+      // }));
+      this.viajes = this.agruparViajesConPasajeros(data);
+      console.log('viajes cargadas:', this.viajes);
+    });
+  }
+  crearRegistro() {
+    this.Index = false;
+    this.Create = true;
+  }
+
+  
+ 
+  agruparViajesConPasajeros(data: ViajeConDetallesViewModel[]): any[] {
+    return data.reduce((viajes, item) => {
+      let viaje = viajes.find(v => v.viaj_id === item.viaj_id);
+      if (!viaje) {
+        viaje = {
+          viaj_id: item.viaj_id,
+          sucu_nombre: item.sucu_nombre || 'Desconocido',
+          trans_nombre: item.trans_nombre,
+          trans_apellido: item.trans_apellido,
+          pasajeros: []
+        };
+        viajes.push(viaje);
+      }
+      if (item.cola_id) {
+        viaje.pasajeros.push({
+          cola_nombre: item.cola_nombre || 'Desconocido',
+          cola_apelllido: item.cola_apelllido || '',
+          cola_email: item.cola_email || '',
+          cola_sexo: item.cola_sexo || '',
+          distancia_km: item.distancia_km || 0
+        });
+      }
+      return viajes;
+    }, []);
+  }
+
+  toggleExpandRow(viaj_id: number): void {
+    const index = this.expandedRows.indexOf(viaj_id);
+    if (index > -1) {
+      this.expandedRows.splice(index, 1); // Si ya está expandida, se elimina
+    } else {
+      this.expandedRows.push(viaj_id); // Si no está expandida, se agrega
+    }
+    console.log('Filas expandidas:', this.expandedRows); // Depuración
   }
 
 
@@ -199,9 +262,124 @@ export class Requisito3Component implements OnInit {
 
   //   console.log('Guardado exitosamente');
   // }
+
+
+
+  // guardar(): void {
+  //   if (this.form.valid) {
+  //     if (this.kilometrosTotales>100) {
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         styleClass: 'iziToast-custom',
+  //         summary: 'Error',
+  //         detail: 'El total de kilometros es mayor a 100',
+  //         life: 3000
+  //       });
+  //       this.colaboradorscuursal = [];
+  //       console.log('soy papo.');
+  //       return;
+  //     }
+
+  //     const encabezadoViaje: any = {
+  //       sucu_id: this.form.value.sucu_id,
+  //       user_user_id: this.id,
+  //       viaj_fecha: this.form.value.viaj_fecha ? this.form.value.viaj_fecha.toISOString() : null,
+  //       // viaj_fecha: new Date().toISOString(), 
+  //       trans_id: this.form.value.trans_id
+  //     };
+  
+  //     this.service.insertarViajeEnc(encabezadoViaje).subscribe(
+  //       (responseEncabezado: any) => {
+  //         if (responseEncabezado.data && responseEncabezado.data.viaj_id) {
+  //           const nuevoViajeId = responseEncabezado.data.viaj_id;
+  //             console.log('Nuevo Viaje ID:', nuevoViajeId);
+  //           console.log('form:', this.form.value);
+
+  //           const detalles = this.form.value.colaboradores.map((colaborador) => ({
+  //             viaj_id: nuevoViajeId,
+  //             distancia_km: colaborador.distancia_km,
+  //             total_a_pagar: colaborador.total_a_pagar,
+  //             cosu_id: colaborador.cosu_id,
+  //             // fecha_viaje: new Date().toISOString(),
+  //             fecha_viaje: this.form.value.viaj_fecha.toISOString(),
+  //             nombre: colaborador.colaborador
+  //           }));
+  //           console.log('Nuevo Viaje ID:', detalles);
+  //           console.log('form:', this.form.value);
+            
+  
+  //           detalles.forEach((detalle) => {
+  //             this.service.insertarViajeDet(detalle).subscribe(
+  //               (responseDetalle: any) => {
+  //                 if (responseDetalle.data.codeStatus === 0) {
+  //                   // Mostrar mensaje para el colaborador ya asignado
+  //                   this.messageService.add({
+  //                     severity: 'error',
+  //                     styleClass: 'iziToast-custom',
+  //                     summary: 'Error',
+  //                     detail: `El colaborador ${detalle.nombre} ya se encuentra asignado.`,
+  //                     life: 3000
+  //                   });
+  //                 }
+                 
+  //               },
+  //               (error) => {
+  //                 this.messageService.add({
+  //                   severity: 'error',
+  //                   styleClass: 'iziToast-custom',
+  //                   summary: 'Error',
+  //                   detail: 'El colaborador ' + detalle.nombre + ' ya se encuentra asignado.',
+  //                   life: 3000
+  //                 });
+  //               }
+                
+  //             );
+             
+  //           });
+  
+            
+  //         }
+  //         if (this.errores > 0) {
+  //           this.messageService.add({
+              
+  //             severity: 'error',
+  //             styleClass: 'iziToast-custom',
+  //             summary: 'Error',
+  //             detail: 'El colaborador ya se encuentra asignado.',
+  //             life: 3000
+  //           });
+  //         }
+
+  //         this.messageService.add({
+  //           severity: 'success',
+  //           styleClass: 'iziToast-custom',
+  //           summary: 'Éxito',
+  //           detail: 'Insertado con Éxito.',
+  //           life: 3000
+  //         });
+  //       },
+  //       (error) => {
+
+  //         console.error(error);
+  //         this.messageService.add({
+  //           severity: 'error',
+  //           styleClass: 'iziToast-custom',
+  //           summary: 'Error',
+  //           detail: 'Error de comunicación con el servidor al insertar el encabezado.',
+  //           life: 3000
+  //         });
+  //       }
+  //     );
+  //   } else {
+  //     this.submitted = true;
+  //   }
+   
+  // }
+  
+  
   guardar(): void {
     if (this.form.valid) {
-      if (this.kilometrosTotales>100) {
+      if (this.kilometrosTotales > 100) {
         this.messageService.add({
           severity: 'error',
           styleClass: 'iziToast-custom',
@@ -210,15 +388,13 @@ export class Requisito3Component implements OnInit {
           life: 3000
         });
         this.colaboradorscuursal = [];
-        console.log('soy papo.');
         return;
       }
-
+  
       const encabezadoViaje: any = {
         sucu_id: this.form.value.sucu_id,
         user_user_id: this.id,
         viaj_fecha: this.form.value.viaj_fecha ? this.form.value.viaj_fecha.toISOString() : null,
-        // viaj_fecha: new Date().toISOString(), 
         trans_id: this.form.value.trans_id
       };
   
@@ -226,77 +402,61 @@ export class Requisito3Component implements OnInit {
         (responseEncabezado: any) => {
           if (responseEncabezado.data && responseEncabezado.data.viaj_id) {
             const nuevoViajeId = responseEncabezado.data.viaj_id;
-              console.log('Nuevo Viaje ID:', nuevoViajeId);
-            console.log('form:', this.form.value);
-
+  
             const detalles = this.form.value.colaboradores.map((colaborador) => ({
               viaj_id: nuevoViajeId,
               distancia_km: colaborador.distancia_km,
               total_a_pagar: colaborador.total_a_pagar,
               cosu_id: colaborador.cosu_id,
-              // fecha_viaje: new Date().toISOString(),
               fecha_viaje: this.form.value.viaj_fecha.toISOString(),
               nombre: colaborador.colaborador
             }));
-            console.log('Nuevo Viaje ID:', detalles);
-            console.log('form:', this.form.value);
-            
   
-            detalles.forEach((detalle) => {
-              this.service.insertarViajeDet(detalle).subscribe(
+            from(detalles)
+              .pipe(
+                concatMap((detalle) => 
+                  this.service.insertarViajeDet(detalle).pipe(delay(200)) 
+                )
+              )
+              .subscribe(
                 (responseDetalle: any) => {
-                  if (responseDetalle.data.codeStatus === 0) {
-                    // Mostrar mensaje para el colaborador ya asignado
+                  if (responseDetalle.data && responseDetalle.data.codeStatus === 0) {
                     this.messageService.add({
                       severity: 'error',
                       styleClass: 'iziToast-custom',
                       summary: 'Error',
-                      detail: `El colaborador ${detalle.nombre} ya se encuentra asignado.`,
+                      detail: `El colaborador ${responseDetalle.data.nombre} ya se encuentra asignado.`,
                       life: 3000
                     });
                   }
-                 
                 },
                 (error) => {
                   this.messageService.add({
                     severity: 'error',
                     styleClass: 'iziToast-custom',
                     summary: 'Error',
-                    detail: 'El colaborador ' + detalle.nombre + ' ya se encuentra asignado.',
+                    detail: 'Ocurrió un error al asignar al colaborador.',
+                    life: 3000
+                  });
+                },
+                () => {
+                  this.messageService.add({
+                    severity: 'success',
+                    styleClass: 'iziToast-custom',
+                    summary: 'Éxito',
+                    detail: 'Todos los detalles del viaje han sido procesados.',
                     life: 3000
                   });
                 }
-                
               );
-             
-            });
-  
-            
           }
-          if (this.errores > 0) {
-            this.messageService.add({
-              severity: 'error',
-              styleClass: 'iziToast-custom',
-              summary: 'Error',
-              detail: 'El colaborador ya se encuentra asignado.',
-              life: 3000
-            });
-          }
-          this.messageService.add({
-            severity: 'success',
-            styleClass: 'iziToast-custom',
-            summary: 'Éxito',
-            detail: 'Insertado con Éxito.',
-            life: 3000
-          });
         },
         (error) => {
-          console.error(error);
           this.messageService.add({
             severity: 'error',
             styleClass: 'iziToast-custom',
             summary: 'Error',
-            detail: 'Error de comunicación con el servidor al insertar el encabezado.',
+            detail: 'Error al guardar el encabezado del viaje.',
             life: 3000
           });
         }
@@ -304,13 +464,15 @@ export class Requisito3Component implements OnInit {
     } else {
       this.submitted = true;
     }
-   
   }
-  
   
   cancelar() {
     this.form.reset();
+    this.ngOnInit();
     this.colaboradorSeleccionado = {};
+    this.colaboradorscuursal = [];
+    this.Index = true;
+    this.Create = false;
     this.errorKm = false;
   }
 }

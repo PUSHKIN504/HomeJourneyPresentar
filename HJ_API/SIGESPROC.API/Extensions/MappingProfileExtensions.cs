@@ -24,6 +24,7 @@ namespace SIGESPROC.API.Extensions
             CreateMap <TransportistaViewModel, TransportistaViewModel>().ReverseMap();
             CreateMap <ViajeEncViewModel, ViajeEncViewModel>().ReverseMap();
             CreateMap <ViajeDetViewModel, ViajeDetViewModel>().ReverseMap();
+            CreateMap <ViajesViewModel, ViajesViewModel>().ReverseMap();
             //CreateMap<PantallaViewModel, tbPantallas>().ReverseMap();
             //CreateMap<RolViewModel, tbRoles>().ReverseMap();
             #endregion

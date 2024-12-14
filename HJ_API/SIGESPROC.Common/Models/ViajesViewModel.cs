@@ -14,6 +14,7 @@ namespace SIGESPROC.Common.Models
         public int trans_id { get; set; }
         public DateTime viaj_fecha { get; set; }
         public decimal total_km { get; set; }
+        public string sucu_nombre { get; set; }
         public decimal total_a_pagar { get; set; }
 
         public int? vide_id { get; set; }

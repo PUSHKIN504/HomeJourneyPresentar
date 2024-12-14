@@ -5,8 +5,144 @@
   </div>
 </div> -->
 
-<!-- Contenedor Principal -->
 <div class="grid" *ngIf="Index">
+  <div class="col-12">
+    <div class="card">
+      <!-- Título -->
+      <h1 class="text-center mt-2">Listado de Viajes</h1>
+      <hr>
+
+      <!-- Botón para crear -->
+      <div class="grid mt-2">
+        <div class="col-12">
+          <button (click)="crearRegistro()" pButton icon="pi pi-plus" label="Crear Nuevo Viaje" class="mr-2"></button>
+        </div>
+      </div>
+
+      <!-- Tabla Principal con Expansión Manual -->
+      <p-table [value]="viajes" [rows]="10" [paginator]="true" [rowHover]="true" [rowsPerPageOptions]="[10, 25, 50]"
+               [globalFilterFields]="['viaj_id', 'trans_nombre', 'sucu_nombre']" responsiveLayout="scroll" styleClass="mt-2">
+        
+        <!-- Encabezados -->
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem;"></th> <!-- Botón de expansión -->
+            <th pSortableColumn="viaj_id">ID Viaje<p-sortIcon field="viaj_id"></p-sortIcon></th>
+            <th pSortableColumn="trans_nombre">Conductor<p-sortIcon field="trans_nombre"></p-sortIcon></th>
+            <th pSortableColumn="sucu_nombre">Sucursal<p-sortIcon field="sucu_nombre"></p-sortIcon></th>
+          </tr>
+        </ng-template>
+
+        <!-- Filas Principales -->
+        <ng-template pTemplate="body" let-viaje>
+          <tr>
+            <td>
+              <button pButton icon="pi pi-chevron-down" class="p-button-rounded p-button-secondary"
+                      (click)="toggleExpandRow(viaje.viaj_id)" *ngIf="!expandedRows.includes(viaje.viaj_id)"></button>
+              <button pButton icon="pi pi-chevron-up" class="p-button-rounded p-button-secondary"
+                      (click)="toggleExpandRow(viaje.viaj_id)" *ngIf="expandedRows.includes(viaje.viaj_id)"></button>
+            </td>
+            <td>{{ viaje.viaj_id }}</td>
+            <td>{{ viaje.trans_nombre }} {{ viaje.trans_apellido }}</td>
+            <td>{{ viaje.sucu_nombre }}</td>
+          </tr>
+
+          <!-- Filas de Expansión -->
+          <tr *ngIf="expandedRows.includes(viaje.viaj_id)">
+            <td colspan="4">
+              <div class="p-3">
+                <h4>Detalles del Viaje ID: {{ viaje.viaj_id }}</h4>
+                <p *ngIf="!viaje.pasajeros.length">No hay pasajeros asociados a este viaje.</p>
+                <p-table [value]="viaje.pasajeros" *ngIf="viaje.pasajeros.length > 0" responsiveLayout="scroll">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Sexo</th>
+                      <th>Distancia (km)</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-pasajero>
+                    <tr>
+                      <td>{{ pasajero.cola_nombre }} {{ pasajero.cola_apelllido }}</td>
+                      <td>{{ pasajero.cola_email }}</td>
+                      <td>{{ pasajero.cola_sexo }}</td>
+                      <td>{{ pasajero.distancia_km }}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!-- 
+<div class="grid" *ngIf="Index">
+  <div class="col-12">
+    <div class="card">
+      
+      <h1 class="text-center mt-2">Listado de Viajes</h1>
+      <hr>
+
+     
+      <div class="grid mt-2">
+        <div class="col-12">
+          <button (click)="crearRegistro()" pButton icon="pi pi-plus" label="Crear Nuevo Viaje" class="mr-2"></button>
+        </div>
+      </div>
+
+     
+      <p-table #dt [value]="viajes" [rows]="10" [paginator]="true" [rowHover]="true" [rowsPerPageOptions]="[10, 25, 50]"
+               [globalFilterFields]="['viaj_fecha', 'trans_nombre', 'cola_nombre', 'sucu_nombre']" responsiveLayout="scroll" styleClass="mt-2">
+        
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" placeholder="Buscar..." class="w-full sm:w-auto" (input)="onGlobalFilter(dt, $event)" />
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="viaj_fecha">Fecha de Viaje<p-sortIcon field="viaj_fecha"></p-sortIcon></th>
+            <th pSortableColumn="trans_nombre">Transportista<p-sortIcon field="trans_nombre"></p-sortIcon></th>
+            <th pSortableColumn="cola_nombre">Colaborador<p-sortIcon field="cola_nombre"></p-sortIcon></th>
+            <th pSortableColumn="sucu_nombre">Sucursal<p-sortIcon field="sucu_nombre"></p-sortIcon></th>
+            <th pSortableColumn="total_a_pagar">Total a Pagar<p-sortIcon field="total_a_pagar"></p-sortIcon></th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-viaje>
+          <tr>
+           
+            <td>{{ viaje.viaj_fecha | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ viaje.trans_nombre }} {{ viaje.trans_apellido }}</td>
+            <td>{{ viaje.cola_nombre }} {{ viaje.cola_apelllido }}</td>
+            <td>{{ viaje.sucu_nombre }}</td>
+            <td>{{ viaje.total_a_pagar | currency:'HNL':'symbol':'1.2-2' }}</td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center">No hay registros disponibles.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div> -->
+
+
+
+<!-- Contenedor Principal -->
+<div class="grid" *ngIf="Create">
   <div class="col-12">
     <div class="card">
       <!-- Título -->
