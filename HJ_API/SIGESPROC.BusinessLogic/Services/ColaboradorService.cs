@@ -221,6 +221,19 @@ namespace SIGESPROC.BusinessLogic.Services
                 return result.Error(ex.Message);
             }
         }
+        public ServiceResult ViajesList()
+        {
+            var result = new ServiceResult();
+            try
+            {
+                var list = _colaboradorRepository.viajeslist();
+                return result.Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return result.Error(ex.Message);
+            }
+        }
 
     }
 }

@@ -203,6 +203,21 @@ namespace SIGESPROC.DataAccess.Repositories
 
             }
         }
+        public IEnumerable<ViajesViewModel> viajeslist()
+        {
+            using (var db = new SqlConnection(SIGESPROC.ConnectionString))
+            {
+
+
+                return db.Query<ViajesViewModel>(
+                        "[dbo].[SP_Viajes_Listar]",
+                        commandType: CommandType.StoredProcedure
+                    ).ToList();
+
+
+
+            }
+        }
     }
 }
 

@@ -29,6 +29,12 @@ namespace SIGESPROC.API.Controllers
             var response = _colaboradorService.ListarColaboradores(); 
             return Ok(response.Data); 
         }
+        [HttpGet("ListarViajes")]
+        public IActionResult ListarViajes()
+        {
+            var response = _colaboradorService.ViajesList();
+            return Ok(response.Data);
+        }
 
         [HttpGet("ListarColaSuc")]
         public IActionResult ListarColaSuc()

@@ -28,7 +28,8 @@ export class Requisito3Component implements OnInit {
       sucu_id: ['', Validators.required],
       trans_id: ['', Validators.required],
       transportista: ['', Validators.required],
-      colaboradores: this.fb.array([])
+      colaboradores: this.fb.array([]),
+      viaj_fecha: [null, Validators.required]
     });
     this.getTransportistas();
     this.getSucursales();
@@ -58,6 +59,11 @@ export class Requisito3Component implements OnInit {
    
   }
 
+  onGlobalFilter(table: Table, event: Event) {
+    table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+  }
+
+
   getSucursales(): void {
     this.service.obtenerSucursales().subscribe((data) => {
       this.sucursales = data.map((sucursal) => ({
@@ -83,6 +89,7 @@ export class Requisito3Component implements OnInit {
           distancia_km: colaborador.distancia_km,
           total_a_pagar: Number(colaborador.distancia_km) * Number(this.tarifaPorKm),
           colaborador: colaborador.cola_nombre_completo,
+          
         })
       );
       this.kilometrosTotales += colaborador.distancia_km;
@@ -210,7 +217,8 @@ export class Requisito3Component implements OnInit {
       const encabezadoViaje: any = {
         sucu_id: this.form.value.sucu_id,
         user_user_id: this.id,
-        viaj_fecha: new Date().toISOString(), 
+        viaj_fecha: this.form.value.viaj_fecha ? this.form.value.viaj_fecha.toISOString() : null,
+        // viaj_fecha: new Date().toISOString(), 
         trans_id: this.form.value.trans_id
       };
   
@@ -226,7 +234,8 @@ export class Requisito3Component implements OnInit {
               distancia_km: colaborador.distancia_km,
               total_a_pagar: colaborador.total_a_pagar,
               cosu_id: colaborador.cosu_id,
-              fecha_viaje: new Date().toISOString(),
+              // fecha_viaje: new Date().toISOString(),
+              fecha_viaje: this.form.value.viaj_fecha.toISOString(),
               nombre: colaborador.colaborador
             }));
             console.log('Nuevo Viaje ID:', detalles);
