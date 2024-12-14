@@ -216,7 +216,6 @@ export class Requisito1Component implements OnInit {
   }
 
 
-  // Método para regresar a la vista anterior
   regresar() {
     this.CerrarCosu();
   }

@@ -8,32 +8,27 @@
 <div class="grid" *ngIf="Index">
   <div class="col-12">
     <div class="card">
-      <!-- Título -->
       <h1 class="text-center mt-2">Listado de Viajes</h1>
       <hr>
 
-      <!-- Botón para crear -->
       <div class="grid mt-2">
         <div class="col-12">
           <button (click)="crearRegistro()" pButton icon="pi pi-plus" label="Crear Nuevo Viaje" class="mr-2"></button>
         </div>
       </div>
 
-      <!-- Tabla Principal con Expansión Manual -->
       <p-table [value]="viajes" [rows]="10" [paginator]="true" [rowHover]="true" [rowsPerPageOptions]="[10, 25, 50]"
                [globalFilterFields]="['viaj_id', 'trans_nombre', 'sucu_nombre']" responsiveLayout="scroll" styleClass="mt-2">
         
-        <!-- Encabezados -->
         <ng-template pTemplate="header">
           <tr>
-            <th style="width: 3rem;"></th> <!-- Botón de expansión -->
+            <th style="width: 3rem;"></th> 
             <th pSortableColumn="viaj_id">ID Viaje<p-sortIcon field="viaj_id"></p-sortIcon></th>
             <th pSortableColumn="trans_nombre">Conductor<p-sortIcon field="trans_nombre"></p-sortIcon></th>
             <th pSortableColumn="sucu_nombre">Sucursal<p-sortIcon field="sucu_nombre"></p-sortIcon></th>
           </tr>
         </ng-template>
 
-        <!-- Filas Principales -->
         <ng-template pTemplate="body" let-viaje>
           <tr>
             <td>
@@ -47,7 +42,6 @@
             <td>{{ viaje.sucu_nombre }}</td>
           </tr>
 
-          <!-- Filas de Expansión -->
           <tr *ngIf="expandedRows.includes(viaje.viaj_id)">
             <td colspan="4">
               <div class="p-3">
@@ -141,18 +135,14 @@
 
 
 
-<!-- Contenedor Principal -->
 <div class="grid" *ngIf="Create">
   <div class="col-12">
     <div class="card">
-      <!-- Título -->
       <h1 class="text-center mt-2">Nuevo Viaje</h1>
       <hr>
 
-      <!-- Formulario -->
       <div class="grid">
         <form [formGroup]="form" class="grid col-12 p-fluid p-formgrid">
-          <!-- Selección de Sucursal -->
           <div class="field col-12 md:col-4">
             <label for="sucursal" style="display: inline-block;">Sucursal&nbsp;</label>
             <p-autoComplete 
@@ -170,7 +160,6 @@
             <small *ngIf="submitted && form.controls['sucursal'].invalid" style="color: red;">El campo es requerido.</small>
           </div>
 
-          <!-- Selección de Transportista -->
           <div class="field col-12 md:col-4">
             <label for="transportista" style="display: inline-block;">Transportistas&nbsp;</label>
             <p-autoComplete 
@@ -199,7 +188,6 @@
             <small *ngIf="submitted && form.controls['viaj_fecha'].invalid" style="color: red;">La fecha es requerida.</small>
           </div>
 
-          <!-- Tarifa por Kilómetro -->
           <div class="field col-12">
             <p class="text-right"><strong>Tarifa por km:</strong> {{ tarifaPorKm ? tarifaPorKm + ' Lps' : 'Seleccione un transportista' }}</p>
           </div>

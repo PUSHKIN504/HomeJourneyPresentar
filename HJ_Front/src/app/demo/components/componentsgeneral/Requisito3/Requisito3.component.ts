@@ -119,11 +119,11 @@ export class Requisito3Component implements OnInit {
   toggleExpandRow(viaj_id: number): void {
     const index = this.expandedRows.indexOf(viaj_id);
     if (index > -1) {
-      this.expandedRows.splice(index, 1); // Si ya está expandida, se elimina
+      this.expandedRows.splice(index, 1); 
     } else {
-      this.expandedRows.push(viaj_id); // Si no está expandida, se agrega
+      this.expandedRows.push(viaj_id); 
     }
-    console.log('Filas expandidas:', this.expandedRows); // Depuración
+    console.log('Filas expandidas:', this.expandedRows); 
   }
 
 
