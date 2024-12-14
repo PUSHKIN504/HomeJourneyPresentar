@@ -415,7 +415,7 @@ export class Requisito3Component implements OnInit {
             from(detalles)
               .pipe(
                 concatMap((detalle) => 
-                  this.service.insertarViajeDet(detalle).pipe(delay(200)) 
+                  this.service.insertarViajeDet(detalle).pipe(delay(100)) 
                 )
               )
               .subscribe(
